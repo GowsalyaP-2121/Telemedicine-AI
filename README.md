@@ -30,6 +30,22 @@ Telemedicine AI streamlines patient intake, language-aware symptom handling, AI-
 | 4 | Gmail | Sends the reply to the patient |
 | 5 | Google Sheets | Stores the submission for review and reporting |
 
+## ◆ Workflow Diagram
+
+```mermaid
+flowchart LR
+  W[Webhook] --> C[Code]
+  C --> A1[AI Agent]
+  A1 --> A2[AI Agent1]
+  A2 --> G[Gmail: Send a message]
+  G --> S[Google Sheets: Append row in sheet]
+
+  M1[(Google Gemini Chat Model)] -. Chat model .-> A1
+  M2[(Google Gemini Chat Model1)] -. Chat model .-> A2
+```
+
+The diagram above mirrors the n8n canvas: Webhook, Code, two AI Agent nodes, Gmail, and Google Sheets, with each agent connected to its Gemini model.
+
 ## ◆ Sample Input
 
 ```json
