@@ -1,0 +1,321 @@
+{
+  "name": "Telemedicine AI",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "telemedicine-input",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -660,
+        -120
+      ],
+      "id": "f0157fe7-8338-49e5-9383-8dfc13ed8532",
+      "name": "Webhook",
+      "webhookId": "9158b200-2155-42b3-b568-ae7abe588577"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract input from the webhook payload\nconst body = $input.first().json.body ?? {};\nconst name = body.name ?? \"\";\nconst email = body.email ?? \"\";\nconst language = body.language ?? \"English\";\nconst symptoms = body.symptoms ?? \"\";\n\nconst languageMap = {\n  Tamil: \"ta\",\n  Hindi: \"hi\",\n  Telugu: \"te\",\n  Malayalam: \"ml\",\n  Kannada: \"kn\",\n  Marathi: \"mr\",\n  Bengali: \"bn\",\n  Gujarati: \"gu\",\n  English: \"en\",\n};\n\nconst lang_code = languageMap[language] || \"en\";\n\nreturn [\n  {\n    json: {\n      name,\n      email,\n      lang_code,\n      symptoms,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -480,
+        -120
+      ],
+      "id": "24015ab7-e27d-4eb4-aeea-d2576a58c045",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a medical language translator. Translate the following patient symptom into English. Do not add or modify meaning.\n\nLanguage Code: {{ $json.lang_code }}\nText: {{ $('Webhook').item.json.body.symptoms }}\n\nReturn only the English translation.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -300,
+        -120
+      ],
+      "id": "f8f4b872-2862-4b78-82a8-06bbc1d15ba7",
+      "name": "AI Agent",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        80
+      ],
+      "id": "80307a18-c20e-4095-af45-fda49dc56b10",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "EFhgqKl4QT3N0APC",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI-powered multilingual telemedicine assistant.\n\nGenerate a structured medical response **entirely in the user’s language**.\n\nSymptom: {{ $('Webhook').item.json.body.symptoms }}\nUser's Language Code: {{ $('Webhook').item.json.body.language }}\nUser's Name: {{ $('Webhook').item.json.body.name }}\n\nThe reply should follow this exact format and be translated:\n\n🩺 *Advice*  \n[Simple advice based on symptom]\n\n👨‍⚕ *Doctor Recommendation*  \nDr. [Fictional Name], [Specialization], [Hospital Name]\n\n🌿 *Home Remedy*  \n[One familiar home remedy based on language or culture]\n\n📬 Address the user directly by name at the beginning:\n\"Dear [User Name],\"\n\n⚠ Translate *everything*, including section headers, to the user’s language.\nUse English **only** if the user input language is English.\n\nDo not include any code, JSON, or markdown — just a clean email body.\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -120
+      ],
+      "id": "2f9c5056-e670-4743-a2c0-cefad85fdb22",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        40,
+        80
+      ],
+      "id": "1386b627-ed07-41ec-9143-580af0fb90fe",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "EFhgqKl4QT3N0APC",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Webhook').item.json.body.email }}",
+        "subject": "Here is your  advice ",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        360,
+        -120
+      ],
+      "id": "f06d6bf6-3b08-4beb-963b-a4d8b2b44bb4",
+      "name": "Send a message",
+      "webhookId": "815e9994-8275-472d-af10-e9c073a36f97",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "FVXx4fQ9yqcP0Vb8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1HZBq-CEteeKEffutPvvghNX5IkhRQTTaymrwT6SyUtk",
+          "mode": "list",
+          "cachedResultName": "vernacular telemedicine ai",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HZBq-CEteeKEffutPvvghNX5IkhRQTTaymrwT6SyUtk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HZBq-CEteeKEffutPvvghNX5IkhRQTTaymrwT6SyUtk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Webhook').item.json.body.name }}",
+            "Email": "={{ $('Webhook').item.json.body.email }}",
+            "Language": "={{ $('Webhook').item.json.body.language }}",
+            "Symptoms": "={{ $('Webhook').item.json.body.symptoms }}",
+            "Diagnosis (Patient Language)": "={{ $('AI Agent1').item.json.output }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Language",
+              "displayName": "Language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Symptoms",
+              "displayName": "Symptoms",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Diagnosis (Patient Language)",
+              "displayName": "Diagnosis (Patient Language)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        540,
+        -120
+      ],
+      "id": "21a00e57-a6f3-4937-a65d-f03a58cdf3d9",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "siWGqMfDhyOOJFrQ",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d9922977-6ee6-42a0-9ce0-6c2ab037ee6f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b5c7b9a73b18bcbacce556a5e8c16c61602fd3bc1b910132448884a0822d06da"
+  },
+  "id": "zrDyM6R6dKifeerq",
+  "tags": []
+}
