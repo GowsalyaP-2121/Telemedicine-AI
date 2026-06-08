@@ -18,7 +18,7 @@ Telemedicine AI streamlines patient intake, language-aware symptom handling, AI-
 | --- | --- |
 | [Telemedicine AI.json](Telemedicine%20AI.json) | n8n workflow export |
 | [sample-telemedicine-workflow.json](sample-telemedicine-workflow.json) | sanitized sample n8n workflow export |
-| [telemedice_ai_workflow.jpeg](telemedice_ai_workflow.jpeg) | exact n8n canvas screenshot |
+| [n8n-workflow-screenshot.jpeg](n8n-workflow-screenshot.jpeg) | exact n8n canvas screenshot |
 | [telemedicine-code-node.js](telemedicine-code-node.js) | JavaScript logic for the Code node |
 
 ## ◆ Workflow Summary
@@ -49,7 +49,7 @@ The diagram above mirrors the n8n canvas: Webhook, Code, two AI Agent nodes, Gma
 
 ## ◆ Original Canvas Screenshot
 
-![Exact n8n workflow screenshot](telemedice_ai_workflow.jpeg)
+![Exact n8n workflow screenshot](n8n-workflow-screenshot.jpeg)
 
 This is the exact picture you provided, added separately from the Mermaid diagram so the repo includes both the rendered flow and the original canvas image.
 
