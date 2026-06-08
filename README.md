@@ -17,6 +17,7 @@ Telemedicine AI streamlines patient intake, language-aware symptom handling, AI-
 | File | Purpose |
 | --- | --- |
 | [Telemedicine AI.json](Telemedicine%20AI.json) | n8n workflow export |
+| [sample-telemedicine-workflow.json](sample-telemedicine-workflow.json) | sanitized sample n8n workflow export |
 | [telemedicine-code-node.js](telemedicine-code-node.js) | JavaScript logic for the Code node |
 
 ## ◆ Workflow Summary
@@ -44,8 +45,9 @@ Telemedicine AI streamlines patient intake, language-aware symptom handling, AI-
 
 1. Import [Telemedicine AI.json](Telemedicine%20AI.json) into n8n.
 2. Connect your Gmail, Google Sheets, and Google Gemini credentials.
-3. Confirm the Code node behavior matches [telemedicine-code-node.js](telemedicine-code-node.js).
-4. Run a test submission, then activate the workflow once validation is complete.
+3. Review [sample-telemedicine-workflow.json](sample-telemedicine-workflow.json) for a sanitized importable baseline.
+4. Confirm the Code node behavior matches [telemedicine-code-node.js](telemedicine-code-node.js).
+5. Run a test submission, then activate the workflow once validation is complete.
 
 ## ◆ Important Notes
 
